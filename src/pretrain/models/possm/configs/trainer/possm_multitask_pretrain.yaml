@@ -1,0 +1,49 @@
+# @package _global_
+defaults:
+  - override /model: possm_10M
+  - _self_
+
+trainer:
+  _target_: pretrain.models.possm.POSSMMultitaskPretrain
+
+precision: bf16
+
+# Multi-task pretrain ignores the global `task` slot and uses `tasks` instead.
+task: null
+# Optional list of TS1 tasks to jointly pretrain on. If null/unset, defaults
+# to all tasks reported by IBLBrainWideBenchTS1.get_supported_tasks().
+tasks: null
+
+batch_size: 256
+base_lr: 5e-5
+
+# Per-task loss weights applied as multiplicative scalars before summing
+# in compute_multitask_loss. Tasks not listed here default to 1.0.
+# Tuned to balance per-task gradient magnitudes (classification CE loss is
+# typically much larger than regression MSE / Poisson NLL on these targets).
+task_weights:
+  choice: 0.01
+  reward: 0.5
+  stimulus_contrast: 0.1
+  whisker_motion_energy: 1.0
+  wheel_speed: 1.0
+  right_paw_speed: 1.0
+  left_paw_speed: 1.0
+  licking_rate: 1.0
+
+val:
+  selection_key: avg_metric
+  minimize: false
+
+ckpt:
+  enable: true
+
+train_transforms:
+  - _target_: torch_brain.transforms.UnitDropout
+    max_units: 1800
+    min_units: 300
+    mode_units: 800
+    peak: 4
+
+wandb:
+  project: pretrain-possm_multitask

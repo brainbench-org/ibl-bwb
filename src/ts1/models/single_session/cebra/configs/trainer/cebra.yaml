@@ -1,0 +1,8 @@
+# @package _global_
+defaults:
+  - override /model: cebra
+  - _self_
+
+trainer:
+  _target_: ts1.models.single_session.cebra.CEBRAEvalTrainer
+

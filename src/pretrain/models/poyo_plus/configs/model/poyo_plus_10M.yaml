@@ -1,0 +1,15 @@
+_target_: pretrain.models.poyo_plus.POYOPlus
+latent_step: 0.125
+num_latents_per_step: 32
+dim: 256
+depth: 8
+dim_head: 64
+cross_heads: 2
+self_heads: 8
+ffn_dropout: 0.2
+lin_dropout: 0.4
+atn_dropout: 0.2
+# nested|xformers. Both compute the same attention over the chained tokens, so
+# checkpoints carry over; xformers needs the optional `xformers` extra and mainly saves
+# memory, with a smaller speedup. See core/nn/varlen_attention.py
+attn_impl: nested

@@ -1,0 +1,14 @@
+# @package _global_
+defaults:
+  - override /model: readout_rrr
+  - _self_
+
+trainer:
+  _target_: ts2.models.single_session.stat_baseline.StatBaselineTrainer
+
+precision: fp32
+num_epochs: 1  # zero-parameter: one val pass then test, see StatBaselineTrainer
+
+val:
+  every_n_epochs: 1
+  loss: false

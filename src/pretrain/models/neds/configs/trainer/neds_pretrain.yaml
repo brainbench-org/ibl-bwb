@@ -1,0 +1,50 @@
+# @package _global_
+defaults:
+  - override /model: neds_10M
+  - _self_
+
+trainer:
+  _target_: pretrain.models.neds.NEDSPretrain
+
+tasks:
+  - choice
+  - reward
+  - stimulus_contrast
+  - whisker_motion_energy
+  - wheel_speed
+  - right_paw_speed
+  - left_paw_speed
+  - licking_rate
+
+precision: bf16
+num_epochs: 100
+base_lr: 1e-4
+weight_decay: 0.01
+no_weight_decay: ["bias", "norm", "emb", "stitcher", "seq_pooling_weights"]
+batch_size: 1024
+
+val:
+  minimize: true
+
+ckpt:
+  enable: true
+
+masker:
+  _target_: pretrain.models.neds.NEDSMasker
+  mask_ratio: 0.1
+
+# Per-modality loss weights, applied before the losses are averaged over the
+# modalities that had a masked target. Modalities not listed here default to 1.0.
+modality_weights:
+  spikes: 1.0
+  choice: 1.0
+  reward: 1.0
+  stimulus_contrast: 1.0
+  whisker_motion_energy: 1.0
+  wheel_speed: 1.0
+  right_paw_speed: 1.0
+  left_paw_speed: 1.0
+  licking_rate: 1.0
+
+wandb:
+  project: pretrain-neds

@@ -1,0 +1,7 @@
+_target_: ts2.models.single_session.autoencoder.AutoencoderMLP
+encoder_depth: 2
+decoder_depth: 2
+hidden_dim: 256
+dropout: 0.2
+activation: relu
+batch_norm: true

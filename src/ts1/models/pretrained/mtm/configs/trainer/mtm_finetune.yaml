@@ -1,0 +1,29 @@
+# @package _global_
+defaults:
+  - override /model: mtm_10M
+  - _self_
+
+trainer:
+  _target_: ts1.models.pretrained.mtm.MtMEvalTrainer
+
+precision: bf16
+num_epochs: 300
+no_weight_decay: ["bias", "norm", "emb", "stitcher"]
+
+# Prompt token prepended to every sequence, or null to leave it unprompted.
+mask_mode: null
+
+finetuning:
+  enable: true
+  strategy:
+    _target_: core.finetuning.FullFinetuning
+
+val:
+  start_patience: 50
+
+ckpt:
+  load_from: ${oc.env:BWB_PRETRAIN_CKPT_DIR}/mtm.pt
+
+# Lr grid for finetune.py with seed 42
+sweep:
+  base_lr: [5e-5, 1e-4, 2e-4, 5e-4, 1e-3]

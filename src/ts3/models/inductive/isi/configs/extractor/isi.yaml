@@ -1,0 +1,6 @@
+_target_: ts3.models.inductive.isi.ISIExtractor
+
+n_bins: 128
+t_min: 1e-3  # min ISI in seconds
+t_max: 3.0   # max ISI in seconds
+log_bins: true

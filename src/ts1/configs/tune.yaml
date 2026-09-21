@@ -1,0 +1,22 @@
+defaults:
+  - train.yaml
+  - _self_
+  # Optional: a trainer with no file here keeps the default budget.
+  - optional sweep_budget: ${trainer}
+
+eval_seeds: [43, 44, 45, 46, 47]
+wandb_seeds_project: ${wandb.project}-seeds
+
+disable_pbar: true
+log_train_step: false
+num_workers: 4
+
+
+ray:
+  num_samples: 100
+  gpu: 0.25
+  cpu: 6
+  search_seed: 0
+  max_concurrent_trials: 4
+  results_dir: ${oc.env:BWB_RAY_RESULTS_DIR,ray_results/}
+  outputs_dir: ${oc.env:BWB_RAY_OUTPUTS_DIR,ray_outputs/}

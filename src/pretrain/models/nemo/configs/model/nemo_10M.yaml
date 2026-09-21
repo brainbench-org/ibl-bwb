@@ -1,0 +1,8 @@
+_target_: pretrain.models.nemo.NEMO
+wvf_base_channels: 64
+wvf_dropout: 0.1
+wvf_dim_rep: 512
+acg_base_channels: 32
+acg_dropout: 0.2
+acg_dim_rep: 256
+dim_embed: 512

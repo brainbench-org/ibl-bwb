@@ -1,0 +1,13 @@
+_target_: ts3.models.transductive.ndt_stitch.NDTStitchExtractor
+
+pretrain_ckpt: ???  # the shared pretrain checkpoint, e.g. <ckpt.dir>/<run>/best.pt
+seed: ???  # the finetuning seed; the eval part of the file is that seed's checkpoints
+
+# the calibration sweep to read: scanned recursively for one best.pt per (seed, recording)
+# matching the pretrain checkpoint's model. Give every sweep its own directory and name it
+# here. There is no default, because the shared ckpt root holds runs from other suites that
+# also name one recording and a seed, and two matches for one pair is an error
+ckpt_dir: ???
+
+filters: null  # narrows the scan on any config field, e.g. {task: choice}
+csv_path: null  # lists the runs instead: ID, recording_ids, seed, optional ckpt_path

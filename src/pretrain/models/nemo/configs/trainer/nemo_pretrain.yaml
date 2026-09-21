@@ -1,0 +1,51 @@
+# @package _global_
+defaults:
+  - override /model: nemo_10M
+  - _self_
+
+trainer:
+  _target_: pretrain.models.nemo.NEMOPretrain
+
+# ts3 pretrain and eval sessions both come from the selected_units build
+data_root: ${oc.env:BWB_DATA_ROOT_SELECTED_UNITS,${oc.env:BWB_DATA_ROOT,null}}
+
+cache_path: ${oc.env:BWB_CACHE_DIR,cache}/nemo_waveforms.npz
+
+loss:
+  temperature: 0.5
+
+num_workers: 12
+pin_memory: false
+persistent_workers: true
+precision: bf16
+
+# training
+num_epochs: 100
+batch_size: 1024
+weight_decay: 1e-4
+
+grad_clip: 1.0
+
+# lr_scheduler
+base_lr: 0.0005
+lr_decay: 1e-2  # factor to decay down to
+
+# online brain-region probe over the pretrain units, run every val epoch. monitor=null
+# turns it off, and with it val.metric, so also best-model selection and early stopping
+monitor:
+  _target_: pretrain.models.nemo.BrainRegionMonitor
+  data_root: ${data_root}
+
+val:
+  every_n_epochs: 10
+  patience: 5
+  start_patience: 0
+  minimize: false
+  metric: train/l1subout_br/f1_macro
+
+wandb:
+  project: pretrain-nemo  # override on the CLI per sweep
+
+ckpt:
+  enable: true
+  every_n_epochs: 100

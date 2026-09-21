@@ -1,0 +1,9 @@
+# @package _global_
+defaults:
+  - override /model: ndt_superv
+  - _self_
+
+trainer:
+  _target_: ts1.TS1EvalTrainer
+
+precision: bf16

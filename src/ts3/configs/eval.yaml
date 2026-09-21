@@ -1,0 +1,23 @@
+defaults:
+  - _self_
+  - probe: ???
+
+data_root: ${oc.env:BWB_DATA_ROOT_SELECTED_UNITS,${oc.env:BWB_DATA_ROOT,null}}
+emb_path: ???
+task: unit_cosmos
+# Not an RNG seed: it names the submission file, and probe.seed is the probe's own. Leave
+# it null for a file from ts3/extract.py, which records its run seed; for any other file
+# this is the only thing keeping two runs' submissions apart.
+seed: null
+
+save_preds:
+  enable: false
+  path: ${oc.env:BWB_PREDICTIONS_DIR,predictions/}
+  label: null  # submission id
+
+wandb:
+  mode: ${oc.env:WANDB_MODE,disabled}  # disabled|offline|online; online needs WANDB_API_KEY
+  entity: ${oc.env:WANDB_ENTITY,null}  # null uses your own default entity
+  project: ts3-probe  # override on the CLI per sweep
+  name: null
+  dir: ${oc.env:WANDB_DIR,wandb/}

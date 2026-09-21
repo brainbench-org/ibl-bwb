@@ -1,0 +1,2 @@
+_target_: ts1.models.single_session.linear.Linear
+bin_size: 0.02  # 20ms

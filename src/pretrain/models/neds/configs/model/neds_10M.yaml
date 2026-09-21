@@ -1,0 +1,11 @@
+_target_: pretrain.models.neds.NEDS
+
+bin_size: 0.02  # 20ms
+hidden_dim: 256
+# switch to pre_encoder_dropout
+tokenizer_dropout: 0.2
+encoder_num_layers: 18
+encoder_num_heads: 8
+encoder_dropout: 0.4
+# switch to other name
+encoder_ffn_factor: 2

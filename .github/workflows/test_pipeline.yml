@@ -1,0 +1,83 @@
+name: Pipeline output validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ibl_brain_wide_bench_2026/**"
+  pull_request:
+    paths:
+      - "ibl_brain_wide_bench_2026/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - uses: astral-sh/setup-uv@v5
+
+      # The suite processes two sessions; raw data, pipeline output and S3 references
+      # together need ~19 GB, well past the stock runner's free space.
+      - name: Free runner disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android \
+            /usr/local/.ghcup /opt/hostedtoolcache/CodeQL
+          df -h /
+
+      # Only the S3 references are cached: they are stable, pure-download, and fit the
+      # 10 GB per-repo cache budget.  Raw IBL data is ~6 GB per session, which would
+      # blow that budget and get the whole cache evicted, so it is re-fetched per run.
+      # The bucket is regenerated in place under the same keys, so a cache key built from
+      # the EIDs alone keeps serving a stale reference and the comparison tests pass
+      # against a schema the bucket no longer has. Fold in the objects' current ETags.
+      - name: Resolve S3 reference versions
+        id: s3ref
+        env:
+          EIDS: 16693458-0801-4d35-a3f1-9115c7e5acfd 0cbeae00-e229-4b7d-bdcc-1b0569d7e0c3
+        run: |
+          set -euo pipefail
+          tags=""
+          for eid in $EIDS; do
+            url="https://brain-wide-bench.s3.amazonaws.com/brainsets/all_units/ibl_brain_wide_bench_2026/eval/${eid}.h5"
+            etag=$(curl -sSfI "$url" | tr -d '\r' | awk -F': ' 'tolower($1) == "etag" {print $2}')
+            [ -n "$etag" ] || { echo "::error::no ETag for $eid"; exit 1; }
+            tags="${tags}${eid}:${etag};"
+          done
+          echo "hash=$(printf '%s' "$tags" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache S3 reference HDF5
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ibl_s3_ref
+          key: ibl-s3-ref-${{ steps.s3ref.outputs.hash }}
+
+      - name: Install pipeline dependencies
+        run: |
+          uv venv
+          uv pip install \
+            "ray<2.42" \
+            "numpy==1.24.4" \
+            "ONE-api==3.4.0" \
+            "ibllib @ git+https://github.com/int-brain-lab/ibllib.git@2ca4ee2065a9b5baabf7d3ac870839a3a7af9ad3" \
+            "scipy==1.15.3" \
+            "pyarrow>=14.0" \
+            "h5py" \
+            "pytest>=9.0.2" \
+            "pandas" \
+            "torch_brain @ git+https://github.com/neuro-galaxy/torch_brain.git@de389fb00d7a38da696ba7e9760e51abadfe977e"
+
+      - name: Run pipeline validation
+        env:
+          IBL_RAW_DIR: ~/.cache/ibl_raw
+          S3_H5_CACHE_DIR: ~/.cache/ibl_s3_ref
+        run: |
+          cd ibl_brain_wide_bench_2026
+          # --no-project because this job installs its own environment above. Without it
+          # uv discovers the root pyproject from here and resolves that instead.
+          uv run --no-project python -m pytest test_pipeline_output.py -v --basetemp="$RUNNER_TEMP/pytest"

@@ -1,0 +1,10 @@
+# @package _global_
+defaults:
+  - override /model: autoencoder
+  - _self_
+
+trainer:
+  _target_: ts2.TS2EvalTrainer
+
+val:
+  mask_input: false  # an AE fed a hole reconstructs the hole, nothing to select on

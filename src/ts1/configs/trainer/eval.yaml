@@ -1,0 +1,3 @@
+# @package _global_
+trainer:
+  _target_: ts1.TS1EvalTrainer

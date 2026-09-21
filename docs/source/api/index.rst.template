@@ -1,0 +1,42 @@
+.. _api_ref:
+
+=============
+API Reference
+=============
+
+Start from the group you are working in, or search every public object at once.
+
+.. grid:: 1
+   :gutter: 3
+
+   .. grid-item-card:: :fas:`magnifying-glass` All objects
+      :link: all
+      :link-type: doc
+      :class-card: bwb-api-all
+
+      Every public class and function in the benchmark, in one filterable table.
+
+.. grid:: 1 1 2 2
+   :gutter: 3
+   :class-container: bwb-api-groups
+{% for card in API_CARDS %}
+   .. grid-item-card:: {{ card.title }}
+
+      {{ card.description }}
+{% for entry in card.entries %}
+      :mod:`{{ entry.module }}`
+         {{ entry.summary }}
+{%- endfor %}
+{% endfor %}
+.. toctree::
+   :hidden:
+
+   All objects <all>
+{% for card in API_CARDS %}
+.. toctree::
+   :hidden:
+   :caption: {{ card.title }}
+{% for entry in card.entries %}
+   {{ entry.module }}
+{%- endfor %}
+{% endfor %}

@@ -1,0 +1,15 @@
+# @package _global_
+defaults:
+  - override /model: ndt
+  - _self_
+
+precision: bf16
+
+trainer:
+  _target_: ts2.models.single_session.ndt.NDTEvalTrainer
+
+masker:
+  _target_: pretrain.models.ndt_stitch.NDTStitchMasker
+  mask_ratio: 0.5
+  max_block_size: 1
+  block_mask_prob: 0.0

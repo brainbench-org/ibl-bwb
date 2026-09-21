@@ -1,0 +1,232 @@
+table tbody tr:hover td {
+    background-color: color-mix(in srgb, var(--pst-color-primary) 15%, transparent) !important;
+}
+
+/* Collapsed-by-default primary sidebar, applied before the theme's JS runs.
+   Mirrors .pst-squeeze so the handover in sidebar-collapse.js is invisible. */
+html.bwb-sidebar-collapsed .bd-sidebar-primary,
+html.bwb-sidebar-collapsed .bd-sidebar-primary * {
+    transition: none !important;
+}
+
+html.bwb-sidebar-collapsed .bd-sidebar-primary {
+    overflow: hidden;
+    width: 4rem;
+}
+
+html.bwb-sidebar-collapsed .sidebar-primary-item:not(.pst-sidebar-collapse) {
+    opacity: 0;
+    visibility: hidden;
+}
+
+html.bwb-sidebar-collapsed #pst-collapse-sidebar-button .pst-icon {
+    transform: translateX(0.25em) rotate(180deg);
+}
+
+html.bwb-sidebar-collapsed #pst-collapse-sidebar-button .pst-collapse-sidebar-label {
+    height: 0;
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+}
+
+/* Bibliography (docs/source/references.rst). The label is the citation key, so it reads
+   as a name rather than a footnote marker: a muted chip in its own column, with the
+   entry text hanging beside it. */
+.citation-list {
+    display: grid;
+    gap: 0.35rem;
+    margin-top: 1.5rem;
+}
+
+.citation-list > .citation {
+    align-items: baseline;
+    border-radius: 0.375rem;
+    column-gap: 1rem;
+    display: grid;
+    grid-template-columns: minmax(7rem, max-content) 1fr;
+    padding: 0.5rem 0.75rem;
+    transition: background-color 0.15s ease;
+}
+
+.citation-list > .citation:hover,
+.citation-list > .citation:target {
+    background-color: color-mix(in srgb, var(--pst-color-primary) 10%, transparent);
+}
+
+.citation-list > .citation > .label {
+    color: var(--pst-color-text-muted);
+    font-family: var(--pst-font-family-monospace);
+    font-size: 0.85em;
+}
+
+.citation-list > .citation > .label .fn-bracket {
+    display: none;
+}
+
+.citation-list > .citation p {
+    margin: 0;
+}
+
+.citation-list > .citation a.reference.external {
+    text-decoration: none;
+}
+
+.citation-list > .citation a.reference.external:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 48em) {
+    .citation-list > .citation {
+        grid-template-columns: 1fr;
+        row-gap: 0.15rem;
+    }
+}
+
+/* Landing-page link buttons (docs/source/index.rst). Pills take their colour from
+   the theme so they follow the light and dark palettes rather than baking in a hex. */
+.bwb-pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 1.5rem 0;
+}
+
+.bwb-pill {
+    align-items: center;
+    background-color: var(--pst-color-primary);
+    border: 1px solid var(--pst-color-primary);
+    border-radius: 2rem;
+    color: var(--pst-color-background) !important;
+    display: inline-flex;
+    font-size: 0.9rem;
+    font-weight: 600;
+    gap: 0.5rem;
+    padding: 0.55rem 1.1rem;
+    text-decoration: none !important;
+    transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+/* Brand marks that Font Awesome does not carry, inlined in the pill row. */
+.bwb-brand {
+    fill: currentColor;
+    height: 1em;
+    width: 1em;
+}
+
+.bwb-pill:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+}
+
+.bwb-pill-ghost {
+    background-color: transparent;
+    color: var(--pst-color-primary) !important;
+}
+
+.bwb-pill-ghost:hover {
+    background-color: color-mix(in srgb, var(--pst-color-primary) 12%, transparent);
+}
+
+/* Code comments, across every language. a11y-light gives them almost the weight of
+   the code itself, and a11y-dark colours them khaki rather than grey. Both are toned
+   back to a neutral grey, light enough to recede but still clearing the 3:1 the rest
+   of the palette holds for large text. */
+html[data-theme="light"] .highlight .c,
+html[data-theme="light"] .highlight .ch,
+html[data-theme="light"] .highlight .cm,
+html[data-theme="light"] .highlight .cp,
+html[data-theme="light"] .highlight .cpf,
+html[data-theme="light"] .highlight .c1,
+html[data-theme="light"] .highlight .cs {
+    color: #848c96;
+}
+
+html[data-theme="dark"] .highlight .c,
+html[data-theme="dark"] .highlight .ch,
+html[data-theme="dark"] .highlight .cm,
+html[data-theme="dark"] .highlight .cp,
+html[data-theme="dark"] .highlight .cpf,
+html[data-theme="dark"] .highlight .c1,
+html[data-theme="dark"] .highlight .cs {
+    color: #7c7c7c;
+}
+
+/* IBL Core palette, the internal source of truth for anything carrying the project's
+   identity. Cyan carries white text at only 3.03:1, so it is never a filled button
+   background: magenta and dark blue are, and cyan stays on outlines and accents.
+   The logo's decorative magenta to blue to white gradient runs between them. */
+:root {
+    --bwb-cyan: #009fd7;
+    --bwb-magenta: #ce2c97;
+    --bwb-dark-blue: #004d89;
+    --bwb-light-blue: #b1e1f2;
+}
+
+/* Annotated source trees (guides/setup.rst, guides/dataset.rst, guides/pretraining.rst).
+   A hue stands for a different part of the codebase on each page, so the tokens are
+   named for the colour rather than for one page's roles. Every one carries a lighter
+   twin that clears 4.5:1 on the dark surface, and the surface itself follows the theme. */
+:root {
+    --bwb-tree-surface: #f8fafc;
+    --bwb-tree-border: #e2e8f0;
+    --bwb-tree-chip: #f1f5f9;
+    --bwb-ink: #1e293b;
+    --bwb-mute: #94a3b8;
+    --bwb-slate: #374151;
+    --bwb-blue: #2563eb;
+    --bwb-navy: #0352a7;
+    --bwb-pink: #db2777;
+    --bwb-violet: #7c3aed;
+    --bwb-emerald: #059669;
+    --bwb-green: #15803d;
+    --bwb-orange: #c2410c;
+    --bwb-red: #d11926;
+}
+
+html[data-theme="dark"] {
+    --bwb-tree-surface: var(--pst-color-surface);
+    --bwb-tree-border: var(--pst-color-border);
+    --bwb-tree-chip: var(--pst-color-surface);
+    --bwb-ink: var(--pst-color-text-base);
+    --bwb-mute: #8d9aab;
+    --bwb-slate: #9ca3af;
+    --bwb-blue: #60a5fa;
+    --bwb-navy: #7db8f0;
+    --bwb-pink: #f472b6;
+    --bwb-violet: #a78bfa;
+    --bwb-emerald: #34d399;
+    --bwb-green: #4ade80;
+    --bwb-orange: #fb923c;
+    --bwb-red: #f87171;
+}
+
+.bwb-tree {
+    background: var(--bwb-tree-surface);
+    border: 1px solid var(--bwb-tree-border);
+    border-radius: 8px;
+    font-size: 0.875em;
+    line-height: 1.9;
+    overflow-x: auto;
+    padding: 1.2em 1.5em;
+}
+
+/* Path fragments quoted inline in the prose beside the trees. */
+.bwb-tree-chip {
+    background: var(--bwb-tree-chip);
+    border-radius: 4px;
+    padding: 0.1em 0.3em;
+}
+
+.bwb-b { font-weight: 600; }
+.bwb-ink { color: var(--bwb-ink); }
+.bwb-mute { color: var(--bwb-mute); }
+.bwb-slate { color: var(--bwb-slate); }
+.bwb-blue { color: var(--bwb-blue); }
+.bwb-navy { color: var(--bwb-navy); }
+.bwb-pink { color: var(--bwb-pink); }
+.bwb-violet { color: var(--bwb-violet); }
+.bwb-emerald { color: var(--bwb-emerald); }
+.bwb-green { color: var(--bwb-green); }
+.bwb-orange { color: var(--bwb-orange); }
+.bwb-red { color: var(--bwb-red); }

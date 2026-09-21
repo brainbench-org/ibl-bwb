@@ -1,0 +1,9 @@
+_target_: ts1.models.single_session.tcn.TCN
+bin_size: 0.02  # 20ms
+depth: 3
+hidden_dim: 64
+kernel_size: 5
+dropout: 0.2
+batch_norm: true
+dilation_base: 1
+activation: relu

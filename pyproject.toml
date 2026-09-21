@@ -1,0 +1,156 @@
+[project]
+name = "ibl-bwb"
+version = "0.1.0"
+description = "Repository for the IBL BrainWideBench dataset"
+authors = [{ name = "The IBL BrainWideBench authors" }]
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+
+[project.optional-dependencies]
+train = [
+    "hydra-core==1.3.2",
+    "matplotlib",
+    "npyx==4.1.3",
+    "numpy==2.2.6",
+    "optuna==4.7.0",
+    "python-dotenv==1.2.3",
+    "ray[tune]==2.54.0",
+    "rich==15.0.0",
+    "safetensors==0.8.0",
+    "scikit-learn==1.7.2",
+    "scipy==1.15.3",
+    "torch==2.10.0",
+    "torch-brain==0.2.0a0",
+    "torchmetrics==1.9.0",
+    "wandb==0.25.0",
+]
+# Optional POYO+ attention backend, pinned to an exact torch build.
+# See `attn_impl` in src/core/nn/varlen_attention.py.
+xformers = [
+    "xformers==0.0.34",
+]
+# Optional TS1 baseline, kept out of `train` because only that one model needs it.
+cebra = [
+    "cebra==0.6.0",
+]
+# Exactly the dependency closure of src/ibl_bwb_eval, which is importable on its own and
+# is all an external consumer needs to build or score a submission.
+scoring = [
+    "numpy==2.2.6",
+    "rich==15.0.0",
+    "safetensors==0.8.0",
+    "scikit-learn==1.7.2",
+    "scipy==1.15.3",
+    "torch==2.10.0",
+    "torchmetrics==1.9.0",
+]
+dev = [
+    "pre-commit>=3.5.0",
+    "pytest>=9.0.2",
+    "ruff==0.15.9",
+]
+# Floors, not pins: nothing in CI builds the docs, and pins at current versions could not
+# hold anyway, since sphinx 9 needs Python 3.12 while this project floors at 3.10.
+docs = [
+    "jinja2>=3.1",
+    "myst-nb>=1.0",
+    "pydata-sphinx-theme>=0.15",
+    "sphinx>=7.0",
+    "sphinx-autobuild>=2021.3",
+    "sphinx-autodoc-typehints>=2.0",
+    "sphinx-copybutton>=0.5",
+    "sphinx-design>=0.5",
+    "sphinx-inline-tabs>=2023.4",
+    "sphinxcontrib-bibtex>=2.6",
+    "sphinxcontrib-sass>=0.3",
+]
+
+[tool.uv]
+# uv locks every platform by default and win32 has no solution, since cebra caps numpy
+# below 2.0 there. This scopes the lock only: installing on Windows still works.
+environments = [
+    "sys_platform == 'linux'",
+    "sys_platform == 'darwin'",
+]
+
+# Conflicting so each resolves its own torch, which is what makes the per-extra source
+# below legal; xformers is training-only and would pair a CUDA wheel with a CPU torch.
+conflicts = [
+    [{ extra = "train" }, { extra = "scoring" }],
+    [{ extra = "scoring" }, { extra = "xformers" }],
+]
+
+# Scoring is CPU-only, so it skips the multi-GB CUDA build. Plain pip ignores this, so
+# packaging/ibl-bwb-eval/README.md gives the index URL by hand.
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", extra = "scoring" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort
+    "B",        # bugbear
+    "UP",       # pyupgrade
+    "C4",       # comprehensions
+    "SIM",      # simplify
+    "RUF",      # ruff-native
+    "D",        # pydocstyle
+]
+# Docstring layout is enforced, docstring presence is not: most of the tree is
+# undocumented and requiring a docstring everywhere would land hundreds at once.
+ignore = ["D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107"]
+
+[tool.ruff.lint.per-file-ignores]
+# Docstrings, paper abstracts, and long comments that shouldn't be hard-wrapped
+"docs/**" = ["E501"]
+"ibl_brain_wide_bench_2026/pipeline.py" = ["E501"]
+"ibl_brain_wide_bench_2026/utils.py" = ["E501"]
+"src/**" = ["E501"]
+# __init__.py files re-export symbols intentionally
+"**/__init__.py" = ["F401"]
+# imports after sys.path/env setup are intentional
+"docs/source/conf.py" = ["E402"]
+# notebook magic strings (%load_ext) are not useless expressions
+"notebooks/**" = ["E501", "F403", "F405", "B905", "B018"]
+# Adapted from the upstream reference implementations; reformatting their docstrings
+# costs review effort against the originals and buys nothing.
+"src/pretrain/models/**" = ["D"]
+# Test names carry the description, so the docstrings are notes rather than API text.
+"src/tests/**" = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+known-third-party = ["wandb"]
+
+[build-system]
+requires = ["setuptools>=77.0"]
+build-backend = "setuptools.build_meta"
+
+# Training runs from a checkout (`python src/ts1/train.py`), never from a wheel, so the
+# model configs are deliberately not packaged.
+[tool.setuptools.packages.find]
+where = ["src"]
+# Explicit __init__.py everywhere, so a launcher dir under */scripts/ cannot silently
+# become a package and ship. src/hydra_plugins/ is the exception: an __init__.py there
+# hides every other installed Hydra plugin, so it stays a PEP 420 namespace package.
+namespaces = false
+# `tests` is a top-level name that would collide with any other package shipping one.
+# A no-op while it has no __init__.py, kept so adding one cannot ship it by accident.
+exclude = ["tests*"]
+
+[tool.setuptools.package-data]
+ibl_bwb_eval = ["data/*.txt"]
+core = ["data/*.txt"]

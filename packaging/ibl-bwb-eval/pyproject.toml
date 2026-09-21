@@ -1,0 +1,55 @@
+# A second distribution from the same checkout: the root pyproject installs the whole repo
+# editable for training, so its `packages.find` cannot be narrowed to ibl_bwb_eval.
+# Never built in place. `./build.sh` stages the package under build/, where setuptools
+# cannot write an egg-info back into src/.
+[project]
+name = "ibl-bwb-eval"
+dynamic = ["version"]
+description = "Evaluation contract and scorers for the IBL BrainWideBench benchmark"
+authors = [{ name = "The IBL BrainWideBench authors" }]
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["neuroscience", "benchmark", "electrophysiology", "neural-decoding"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Programming Language :: Python :: 3",
+]
+# Mirrors the `scoring` extra in the root pyproject.toml, and stays exact: the leaderboard
+# backend scores submissions from this wheel, so it has to resolve the environment the repo
+# tests in. Not loosened for library installs.
+dependencies = [
+    "numpy==2.2.6",
+    "rich==15.0.0",
+    "safetensors==0.8.0",
+    "scikit-learn==1.7.2",
+    "scipy==1.15.3",
+    "torch==2.10.0",
+    "torchmetrics==1.9.0",
+]
+
+# A URL here is immutable per version once published, so these are the org's canonical
+# locations rather than any single checkout or fork.
+[project.urls]
+Homepage = "https://bwb.iblcore.org"
+Repository = "https://github.com/brainbench-org/ibl-bwb"
+Issues = "https://github.com/brainbench-org/ibl-bwb/issues"
+Changelog = "https://github.com/brainbench-org/ibl-bwb/blob/main/packaging/ibl-bwb-eval/CHANGELOG.md"
+
+[build-system]
+requires = ["setuptools>=77.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+# _version.py is also what PredictionsWriter stamps into every prediction file.
+version = { attr = "ibl_bwb_eval._version.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["ibl_bwb_eval*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+ibl_bwb_eval = ["data/*.txt"]

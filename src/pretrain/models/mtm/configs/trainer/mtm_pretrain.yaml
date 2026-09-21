@@ -1,0 +1,36 @@
+# @package _global_
+defaults:
+  - override /model: mtm_10M
+  - _self_
+
+trainer:
+  _target_: pretrain.models.mtm.MtMPretrain
+
+precision: bf16
+num_epochs: 200
+batch_size: 16
+base_lr: 1e-4
+no_weight_decay: ["bias", "norm", "emb", "stitcher"]
+
+# lr scheduler
+div_factor: 10
+pct_start: 0.15
+
+val:
+  minimize: true
+
+ckpt:
+  enable: true
+
+masker:
+  _target_: pretrain.models.mtm.MtMMasker
+  mask_ratio: 0.3
+  mask_types:
+    - "neuron"
+    - "causal"
+    - "inter_region"
+    - "intra_region"
+  causal_ratio: 0.1
+
+wandb:
+  project: pretrain-mtm

@@ -1,0 +1,20 @@
+_target_: pretrain.models.ndt_stitch.NDTStitch
+
+bin_size: 0.02  # 20ms
+hidden_dim: 256
+
+# transformer encoder
+encoder_num_layers: 13
+encoder_dim_feedforward: 1028
+encoder_num_heads: 8
+encoder_dropout: 0.2
+encoder_activation: "relu"
+
+# dropout regularization
+pre_encoder_dropout: 0.2
+post_encoder_dropout: 0.2
+
+# NDT custom init (T-fixup)
+use_custom_init: true
+tfixup_scale_base: 0.67
+tfixup_v_scale_factor: 1.41421356237

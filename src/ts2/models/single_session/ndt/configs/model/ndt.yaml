@@ -1,0 +1,24 @@
+_target_: ts2.models.single_session.ndt.NDT
+
+max_spikes: 20
+unit_emb_dim: 2
+
+# transformer encoder
+# Warning be careful if unit_emb_dim ==0
+# the number of units in the session should be
+# a multiple of the encoder_num_heads
+encoder_num_layers: 2
+encoder_ffn_factor: 2
+encoder_num_heads: 1
+encoder_dropout: 0.1
+encoder_activation: "relu"
+
+# dropout regularization
+pre_encoder_dropout: 0.2
+post_encoder_dropout: 0.2
+
+# NDT custom init (T-fixup)
+use_custom_init: false
+initrange: 0.1
+tfixup_scale_base: 0.67
+tfixup_v_scale_factor: 1.41421356237

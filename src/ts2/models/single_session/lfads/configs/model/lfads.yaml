@@ -1,0 +1,28 @@
+_target_: ts2.models.single_session.lfads.LFADS
+
+# encoders / latents
+ic_enc_dim: 64
+ci_enc_dim: 64
+ic_dim: 64
+gen_dim: 200
+fac_dim: 40
+co_dim: 4  # set to 0 to drop the controller (autonomous dynamics only)
+con_dim: 64
+ci_lag: 1
+
+# regularization
+dropout: 0.05
+cd_rate: 0.3  # coordinated dropout, per entry; co_smoothing only
+unit_cd_rate: 0.1  # whole-unit hold-out, as val/test do; co_smoothing only
+cd_pass_rate: 0.0
+forecast_grad_scope: tail  # tail | window; val scores the tail only
+
+# numerical stability
+cell_clip: 5.0
+ic_post_var_min: 1.0e-4
+log_rate_clamp: 8.0
+
+# priors
+ic_prior_variance: 0.1
+co_prior_tau: 10.0  # in bins (bin size is 20 ms)
+co_prior_nvar: 0.1

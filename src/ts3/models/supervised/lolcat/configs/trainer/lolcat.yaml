@@ -1,0 +1,45 @@
+# @package _global_
+defaults:
+  - override /model: lolcat
+  - _self_
+
+trainer:
+  _target_: ts3.models.supervised.lolcat.LOLCATTrainer
+
+cache_path: ${oc.env:BWB_CACHE_DIR,cache}/lolcat_isi_hists.pt
+t_min: 1.0e-3
+t_max: 3.0
+log_bins: true
+
+val_fraction: 0.2
+
+oversampling_factor: 5.0
+grow_divisor: 0.96
+shrink_divisor: 1.04
+overfit_margin: 2.0
+
+num_workers: 8
+persistent_workers: false
+precision: fp32
+
+# training
+num_epochs: 200
+batch_size: 64
+weight_decay: 1e-5
+
+# lr scheduler
+base_lr: 1e-3
+lr_decay: 1e-2
+
+val:
+  every_n_epochs: 5
+  patience: 10
+  start_patience: 0
+  metric: val/f1
+
+wandb:
+  project: ts3-lolcat  # override on the CLI per sweep
+
+ckpt:
+  every_n_epochs: 20
+

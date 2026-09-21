@@ -1,0 +1,34 @@
+# @package _global_
+defaults:
+  - override /model: poyo_plus_10M
+  - _self_
+
+trainer:
+  _target_: ts1.models.pretrained.poyo_plus.POYOPlusEvalTrainer
+
+precision: bf16
+num_epochs: 300
+
+finetuning:
+  enable: true
+  strategy:
+    _target_: core.finetuning.GradualUnfreezing
+    unfreeze_at_epoch: 40
+    unfrozen_prefixes: [unit_emb., session_emb.]
+
+val:
+  start_patience: 50
+
+ckpt:
+  load_from: ${oc.env:BWB_PRETRAIN_CKPT_DIR}/poyo_plus.pt
+
+# Lr grid for finetune.py with seed 42
+sweep:
+  base_lr: [1e-5, 2e-5, 5e-5, 1e-4, 5e-4]
+
+train_transforms:
+  - _target_: torch_brain.transforms.UnitDropout
+    max_units: 1800
+    min_units: 300
+    mode_units: 800
+    peak: 4

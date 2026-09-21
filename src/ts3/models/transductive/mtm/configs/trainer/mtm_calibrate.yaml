@@ -1,0 +1,47 @@
+# @package _global_
+defaults:
+  - override /model: mtm_10M
+  - _self_
+
+trainer:
+  _target_: ts3.models.transductive.mtm.MtMCalibrateTrainer
+
+# calibration is single-recording pretraining: same objective as mtm_pretrain.yaml,
+# restricted to one eval recording
+recording_ids: ???  # single eval recording, e.g. [<EID>]
+
+ckpt:
+  load_from: ???  # the shared pretrain checkpoint, e.g. <ckpt.dir>/<run>/best.pt
+
+precision: bf16
+num_epochs: 500
+batch_size: 32
+base_lr: 1e-4
+weight_decay: 1e-4
+no_weight_decay: ["bias", "norm", "emb", "stitcher"]
+
+num_workers: 4
+persistent_workers: true
+prefetch_factor: null
+
+pct_start: 0.5
+div_factor: 1.0
+
+val:
+  minimize: true
+  every_n_epochs: 1
+  patience: 50
+  start_patience: 50
+
+masker:
+  _target_: pretrain.models.mtm.MtMMasker
+  mask_ratio: 0.5
+  mask_types:
+    - "neuron"
+    - "causal"
+    - "inter_region"
+    - "intra_region"
+  causal_ratio: 0.5
+
+wandb:
+  project: ts3-mtm_calibrate

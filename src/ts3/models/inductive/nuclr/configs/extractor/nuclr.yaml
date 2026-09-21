@@ -1,0 +1,8 @@
+_target_: ts3.models.inductive.nuclr.NuCLRExtractor
+
+ckpt: ???  # the pretrain checkpoint to encode with, e.g. <ckpt.dir>/<run>/best.pt
+
+# null keeps what the run trained with; a forward pass fits more per batch than a
+# backward one, and the machine encoding need not be the machine that trained
+batch_size: null
+num_workers: null

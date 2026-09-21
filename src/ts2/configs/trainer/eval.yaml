@@ -1,0 +1,3 @@
+# @package _global_
+trainer:
+  _target_: ts2.TS2EvalTrainer

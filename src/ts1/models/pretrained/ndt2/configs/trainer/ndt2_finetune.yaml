@@ -1,0 +1,26 @@
+# @package _global_
+defaults:
+  - override /model: ndt2_10M
+  - _self_
+
+model:
+  is_ssl: false
+
+trainer:
+  _target_: ts1.models.pretrained.ndt2.NDT2EvalTrainer
+
+precision: bf16
+num_epochs: 200
+
+weight_decay: 0.01
+
+finetuning:
+  enable: true
+  strategy:
+    _target_: core.finetuning.FullFinetuning
+
+val:
+  start_patience: 100
+
+ckpt:
+  load_from: ???

@@ -1,0 +1,28 @@
+# @package _global_
+defaults:
+  - override /model: neds_10M
+  - _self_
+
+trainer:
+  _target_: ts1.models.pretrained.neds.NEDSEvalTrainer
+
+precision: bf16
+num_epochs: 100
+base_lr: 1e-4
+weight_decay: 0.01
+no_weight_decay: ["bias", "norm", "emb", "stitcher", "seq_pooling_weights"]
+batch_size: 64
+
+finetuning:
+  enable: true
+  strategy:
+    _target_: core.finetuning.GradualUnfreezing
+    unfreeze_at_epoch: 30
+    unfrozen_prefixes: [decoders., tokenizers.]
+
+val:
+  start_patience: 0
+
+ckpt:
+  enable: true
+  load_from: ???

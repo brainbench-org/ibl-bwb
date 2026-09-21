@@ -1,0 +1,53 @@
+defaults:
+  - _self_
+  - model: null
+  - trainer: ???
+
+# only what every ts3 trainer shares; anything that differs is set per trainer
+data_root: ${oc.env:BWB_DATA_ROOT_SELECTED_UNITS,${oc.env:BWB_DATA_ROOT,null}}
+task: unit_cosmos
+seed: 42
+
+pin_memory: false
+no_weight_decay: ["bias", "norm", "emb"]
+grad_clip: 1.0
+
+val:
+  first: false  # do val before train (for debug)
+  minimize: false  # min or max val.metric
+
+test:
+  enable: true
+
+save_preds:
+  enable: false
+  path: ${oc.env:BWB_PREDICTIONS_DIR,predictions/}
+  label: null  # submission id
+
+wandb:
+  mode: ${oc.env:WANDB_MODE,disabled}  # disabled|offline|online; online needs WANDB_API_KEY
+  entity: ${oc.env:WANDB_ENTITY,null}  # null uses your own default entity
+  project: ts3-${hydra:runtime.choices.trainer}  # override on the CLI per sweep
+  name: null
+  dir: ${oc.env:WANDB_DIR,wandb/}
+
+ckpt:
+  enable: true
+  dir: ${oc.env:BWB_CKPT_DIR,ckpt/}
+  every_n_epochs: null
+  load_from: null
+  resume: false
+  model_only: false
+  save_last: true
+
+ddp:
+  force: false
+  master_addr: localhost
+  master_port: null
+
+log_weights: false
+log_grads: false
+log_stats_every_n_steps: 1
+log_train_step: true
+disable_pbar: false
+debug: false

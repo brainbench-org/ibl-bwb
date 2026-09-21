@@ -1,0 +1,5 @@
+# @package _global_
+
+model:
+  _target_: pretrain.models.my_model.MyModel
+  dim: 256  # TODO: add your model hyperparameters here

@@ -1,0 +1,81 @@
+defaults:
+  - _self_
+  - model: null
+  - trainer: ???
+
+data_root: ${oc.env:BWB_DATA_ROOT_SELECTED_UNITS,${oc.env:BWB_DATA_ROOT,null}}
+recording_id: ???
+task: ???
+# context_length not declared here, and it defaults to 1.0 in the Datasets. Opt in with
+# +context_length=<seconds> after checking a model supports it (see the dataset docs).
+
+num_workers: 8
+pin_memory: true
+persistent_workers: true
+precision: fp32
+seed: 42
+
+# training
+num_epochs: 100
+batch_size: 32
+weight_decay: 1e-4
+no_weight_decay: ["bias", "norm", "emb"]
+grad_clip: 1.0
+
+# lr scheduler
+base_lr: 1e-3
+pct_start: 0.5
+div_factor: 1.0
+
+finetuning:
+  enable: false
+  strategy: null
+
+val:
+  first: false  # do val before train (for debug)
+  every_n_epochs: 10
+  step_factor: 3  # stride for val sampler (* bin_size)
+  mask_input: true  # remove the held-out spikes from the val input, as test does
+  loss: false  # compute val loss
+  patience: 20
+  start_patience: 100
+  minimize: false  # min or max the avg val metric
+
+test:
+  enable: true
+
+save_preds:
+  enable: false
+  path: ${oc.env:BWB_PREDICTIONS_DIR,predictions/}
+  label: null  # submission id
+wandb_seeds_project: null  # where to save multiple seeds (defaults to wandb.project)
+wandb:
+  mode: ${oc.env:WANDB_MODE,disabled}  # disabled|offline|online; online needs WANDB_API_KEY
+  entity: ${oc.env:WANDB_ENTITY,null}  # null uses your own default entity
+  project: ts2-${hydra:runtime.choices.trainer}  # override on the CLI per sweep
+  name: null
+  dir: ${oc.env:WANDB_DIR,wandb/}
+
+ckpt:
+  enable: false
+  dir: ${oc.env:BWB_CKPT_DIR,ckpt/}
+  every_n_epochs: 1
+  load_from: null
+  resume: false
+  model_only: false
+  save_last: true
+
+ddp:
+  force: false
+  master_addr: localhost
+  master_port: null
+
+train_transforms: []
+
+log_code: false
+log_weights: false
+log_grads: false
+log_stats_every_n_steps: 1
+log_train_step: true
+disable_pbar: false
+debug: false

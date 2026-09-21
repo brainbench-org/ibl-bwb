@@ -1,0 +1,4 @@
+_target_: ts2.models.single_session.stat_baseline.RRRReadoutWithISI
+
+rank: null
+ridge_lambda: null

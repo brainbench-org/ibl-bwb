@@ -1,0 +1,28 @@
+_target_: ts1.models.single_session.ndt_superv.NDTSuperv
+
+bin_size: 0.02  # 20ms
+max_spikes: 20
+
+# How binned spikes enter the model:
+#   "none":   raw float spike counts, hidden_dim = num_units, nhead forced to 1
+#   "count":  per-unit Embedding(max_spikes, 2) as `spike_emb`, hidden_dim = num_units * 2
+#   "linear": nn.Linear(num_units, hidden_dim) as `spike_proj`
+spike_readin: linear
+hidden_dim: 128  # only used when spike_readin == "linear"
+
+# transformer encoder
+encoder_num_layers: 4
+encoder_ffn_factor: 2  # dim_feedforward = hidden_dim * encoder_ffn_factor
+encoder_num_heads: 2
+encoder_dropout: 0.2
+encoder_activation: "relu"
+
+# dropout regularization
+pre_encoder_dropout: 0.2
+post_encoder_dropout: 0.2
+
+# NDT custom init (T-fixup)
+use_custom_init: false
+initrange: 0.1
+tfixup_scale_base: 0.67
+tfixup_v_scale_factor: 1.41421356237

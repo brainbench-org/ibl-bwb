@@ -1,0 +1,26 @@
+# @package _global_
+defaults:
+  - override /model: poyo_10M
+  - _self_
+
+trainer:
+  _target_: pretrain.models.poyo.POYOSingleTaskPretrain
+
+precision: bf16
+task: ???
+
+batch_size: 256
+base_lr: 5e-5
+
+ckpt:
+  enable: true
+
+train_transforms:
+  - _target_: torch_brain.transforms.UnitDropout
+    max_units: 1800
+    min_units: 300
+    mode_units: 800
+    peak: 4
+
+wandb:
+  project: pretrain-poyo

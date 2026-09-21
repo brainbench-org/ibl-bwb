@@ -1,0 +1,27 @@
+# @package _global_
+defaults:
+  - override /model: ndt2_10M
+  - _self_
+
+trainer:
+  _target_: pretrain.models.ndt2.NDT2Pretrain
+
+precision: bf16
+num_epochs: 100
+grad_accum_steps: 32
+
+val:
+  minimize: true
+
+ckpt:
+  enable: true
+
+masker:
+  _target_: pretrain.models.ndt2.NDT2Masker
+  mask_ratio: 0.5
+
+model:
+  is_ssl: true
+
+wandb:
+  project: pretrain-ndt2

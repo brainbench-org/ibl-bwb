@@ -1,0 +1,6 @@
+_target_: ts1.models.single_session.gru.GRU
+bin_size: 0.02  # 20ms
+depth: 2
+hidden_dim: 64
+dropout: 0.2
+bidirectional: false

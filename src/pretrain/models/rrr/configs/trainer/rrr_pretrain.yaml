@@ -1,0 +1,25 @@
+# @package _global_
+defaults:
+  - override /model: rrr
+  - _self_
+
+trainer:
+  _target_: pretrain.models.rrr.RRRSingleTaskPretrain
+
+
+task: ???  # V is task-specific, so one run and checkpoint per behavior
+
+precision: fp32  # the reported RRR baseline predates the bf16 default
+
+batch_size: 32
+num_epochs: 100
+
+val:
+  minimize: false  # every task's primary metric is higher-is-better
+  patience: 20
+
+ckpt:
+  enable: true  # best.pt is the entire output of this phase
+
+wandb:
+  project: pretrain-rrr

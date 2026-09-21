@@ -1,0 +1,3 @@
+_target_: ts2.models.single_session.stat_baseline.TrailingMean
+
+k: null

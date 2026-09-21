@@ -1,0 +1,24 @@
+_target_: pretrain.models.mtm.MtM
+
+bin_size: 0.02  # 20ms
+hidden_dim: 256
+
+# shared projection between per-session stitchers and the encoder
+shared_proj_input_dim: 668
+shared_proj_ffn_mult: 2
+
+# transformer encoder
+encoder_num_layers: 25
+encoder_dim_feedforward: 1028
+encoder_num_heads: 8
+encoder_dropout: 0.2
+encoder_activation: "gelu"
+
+# dropout regularization
+pre_encoder_dropout: 0.2
+post_encoder_dropout: 0.2
+
+# NDT custom init (T-fixup)
+use_custom_init: true
+tfixup_scale_base: 0.67
+tfixup_v_scale_factor: 1.41421356237

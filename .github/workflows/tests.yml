@@ -1,0 +1,84 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # ibl_bwb_eval must stay green without the training stack, which is what an external
+  # consumer of the scorer actually installs. The file list is the contract: these are
+  # the tests that may not depend on core, the suites, or pretrain.
+  scoring:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      # No --index-url here on purpose: the `scoring` extra points torch at the CPU index
+      # itself, and this job is what catches that wiring coming undone.
+      - run: uv pip install --system -e ".[scoring]" pytest
+      - name: The scorer install is CPU-only
+        run: python -c "import torch; assert torch.__version__.endswith('+cpu'), torch.__version__"
+      - run: >
+          pytest src/tests/test_ibl_bwb_eval_isolation.py src/tests/test_scoring_roundtrip.py
+          src/tests/test_aggregation.py src/tests/test_bps.py src/tests/test_poisson_d2.py
+          src/tests/test_tasks.py -q
+
+  # The release build is exercised by nothing else: a refactor under src/ibl_bwb_eval can
+  # drop a file from the wheel or break build.sh, and the next release is the first anyone
+  # would notice. Cheap enough to run on every PR.
+  release-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: ./packaging/ibl-bwb-eval/build.sh
+      # Metadata and README have to render on PyPI, where a bad long_description is
+      # rejected at upload rather than at build.
+      - run: uvx twine check dist/*
+      - name: The wheel ships the package and its data, and nothing else
+        run: |
+          python - <<'EOF'
+          import glob, zipfile
+          names = zipfile.ZipFile(glob.glob("dist/*.whl")[0]).namelist()
+          tops = {n.split("/")[0] for n in names
+                  if "/" in n and not n.split("/")[0].endswith(".dist-info")}
+          assert tops == {"ibl_bwb_eval"}, f"unexpected top-level in wheel: {sorted(tops)}"
+          assert "ibl_bwb_eval/data/eval_recording_ids.txt" in names, "eval session list missing"
+          assert not [n for n in names if n.endswith((".pyc", ".pyo"))], "compiled files in wheel"
+          EOF
+
+  # Everything else. Runs the whole directory rather than a list, so a new test file is
+  # covered without touching this workflow. No GPU and no dataset on the runner: the
+  # tests that need either skip themselves.
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      # `train` resolves the CUDA build, which is multi-GB and useless on a CPU runner, so
+      # the CPU wheel goes in first and satisfies the `==2.10.0` pin.
+      - run: uv pip install --system torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+      - run: uv pip install --system -e ".[train]" pytest
+      - run: pytest src/tests -q
+        env:
+          CUDA_VISIBLE_DEVICES: ""
+          WANDB_MODE: disabled

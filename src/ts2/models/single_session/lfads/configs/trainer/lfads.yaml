@@ -1,0 +1,26 @@
+# @package _global_
+defaults:
+  - override /model: lfads
+  - _self_
+
+trainer:
+  _target_: ts2.models.single_session.lfads.LFADSEvalTrainer
+
+# ELBO weights. The reconstruction term is a per-sample sum, so 1.0 here is the
+# unmodified ELBO. AutoLFADS treats these as search parameters rather than
+# constants, see LFADS.create_search_space.
+kl_ic_scale: 1.0
+kl_co_scale: 1.0
+kl_start_epoch: 0
+kl_increase_epoch: 20
+
+# L2 on the generator and controller recurrent weights, mean-squared per matrix
+l2_gen_scale: 1.0
+l2_con_scale: 1.0
+l2_start_epoch: 0
+l2_increase_epoch: 20
+
+no_weight_decay: ["bias", "norm", "emb", "_h0"]
+
+ckpt:
+  enable: true

@@ -1,0 +1,25 @@
+# @package _global_
+defaults:
+  - override /model: rrr
+  - _self_
+
+trainer:
+  _target_: ts1.models.pretrained.rrr.RRREvalTrainer
+
+# Single session with V frozen, so only this session's U/b are fit -- which makes
+# the objective convex for the CONTINUOUS tasks.
+batch_size: 32
+
+finetuning:
+  enable: true
+  strategy:
+    _target_: core.finetuning.Probe
+    unfrozen_prefixes: [Us., bs.]
+
+ckpt:
+  load_from: ???  # checkpoint supplying the pretrained shared basis V
+
+# base_lr grids for a finetune.py sweep, per task -- licking_rate is capped at 1e-3
+# because Poisson diverges above it (one session hit poisson_d2 -55 at 3e-3):
+#   choice, whisker_motion_energy  [1e-4, 3e-4, 1e-3, 3e-3, 1e-2]
+#   licking_rate                   [3e-5, 1e-4, 3e-4, 1e-3]

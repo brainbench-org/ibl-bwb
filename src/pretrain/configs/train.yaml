@@ -1,0 +1,68 @@
+defaults:
+  - _self_
+  - model: null
+  - trainer: ???
+
+data_root: ${oc.env:BWB_DATA_ROOT_PRETRAIN,${oc.env:BWB_DATA_ROOT,null}}
+recording_ids: null # default to all the pretrain session
+seed: 42
+
+num_workers: 4
+pin_memory: true
+persistent_workers: true
+prefetch_factor: null # null lets torch pick (2 batches per worker)
+precision: bf16 # fp32 for models that need the numerical headroom
+
+num_epochs: 100
+batch_size: 32
+base_lr: 1e-3 # most trainers scale it by sqrt(batch_size)
+weight_decay: 1e-4
+no_weight_decay: ["bias", "norm", "emb"]
+grad_clip: 1.0
+
+# lr scheduler
+pct_start: 0.5
+div_factor: 1.0
+
+val:
+  first: false
+  every_n_epochs: 1
+  minimize: true
+
+test:
+  enable: false
+
+wandb:
+  mode: ${oc.env:WANDB_MODE,disabled}  # disabled|offline|online; online needs WANDB_API_KEY
+  entity: ${oc.env:WANDB_ENTITY,null}  # null uses your own default entity
+  project: pretrain-${hydra:runtime.choices.trainer}  # override on the CLI per sweep
+  name: null
+  dir: ${oc.env:WANDB_DIR,wandb/}
+
+ckpt:
+  # when enabled: best.pt on each val improvement, 
+  # last.pt each epoch unless save_last is false, 
+  # and epoch_N.pt only if every_n_epochs is an int
+  enable: false
+  dir: ${oc.env:BWB_CKPT_DIR,ckpt/}
+  save_last: true
+  every_n_epochs: null
+  load_from: null
+  resume: false
+  model_only: false
+
+ddp:
+  force: false
+  master_addr: localhost
+  master_port: null
+
+train_transforms: []
+
+log_code: false
+log_weights: false
+log_grads: false
+log_stats_every_n_steps: 1
+log_train_step: true
+grad_accum_steps: 1
+disable_pbar: false
+debug: false

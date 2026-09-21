@@ -1,0 +1,27 @@
+{{ module }}
+{{ "=" * module|length }}
+
+.. automodule:: {{ module }}
+
+{% if module_info["description"] %}
+{{ module_info["description"] }}
+{% endif %}
+
+{% for section in module_info["sections"] %}
+{% if section["title"] %}
+{{ section["title"] }}
+{{ "-" * section["title"]|length }}
+{% endif %}
+
+{% if section["description"] %}
+{{ section["description"] }}
+{% endif %}
+
+.. autosummary::
+  :nosignatures:
+  :toctree: autosummary/
+
+{% for obj in section["autosummary"] %}
+  {{ obj }}
+{%- endfor %}
+{% endfor %}

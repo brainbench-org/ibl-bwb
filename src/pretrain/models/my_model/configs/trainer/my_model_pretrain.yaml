@@ -1,0 +1,13 @@
+# @package _global_
+defaults:
+  - override /model: my_model
+  - _self_
+
+trainer:
+  _target_: pretrain.models.my_model.MyModelPretrain
+
+precision: bf16
+num_epochs: 100
+
+ckpt:
+  enable: true

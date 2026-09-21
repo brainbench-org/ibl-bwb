@@ -1,0 +1,19 @@
+_target_: pretrain.models.ndt2.NDT2
+
+hidden_dim: 384
+units_per_patch: 16
+max_spikes: 20
+max_num_units: 5000
+
+bin_size: 0.02  # 20ms
+tokenize_session: true
+tokenize_subject: true
+enc_depth: 6
+enc_heads: 4
+enc_ffn_mult: 2
+dec_depth: 2
+dec_heads: 4
+dec_ffn_mult: 2
+dropout: 0.2
+is_causal: false
+pre_norm: true

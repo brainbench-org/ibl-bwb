@@ -1,0 +1,16 @@
+# @package _global_
+defaults:
+  - override /model: poyo_1M
+  - _self_
+
+trainer:
+  _target_: ts1.models.pretrained.poyo.POYOEvalTrainer
+
+precision: bf16
+
+train_transforms:
+  - _target_: torch_brain.transforms.UnitDropout
+    max_units: 1800
+    min_units: 300
+    mode_units: 800
+    peak: 4

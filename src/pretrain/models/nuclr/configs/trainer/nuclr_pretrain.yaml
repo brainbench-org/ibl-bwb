@@ -1,0 +1,64 @@
+# @package _global_
+defaults:
+  - override /model: nuclr_10M
+  - _self_
+
+trainer:
+  _target_: pretrain.models.nuclr.NuCLRPretrain
+
+# ts3 pretrain and eval sessions both come from the selected_units build
+data_root: ${oc.env:BWB_DATA_ROOT_SELECTED_UNITS,${oc.env:BWB_DATA_ROOT,null}}
+
+loss:
+  _target_: pretrain.models.nuclr.NuCLRLoss
+  tau: 0.2
+  dcl: true
+  projector: true
+  full_denom: true
+  dim_in: null # set by trainer
+
+views:
+  duration: 20.0       # in seconds
+  max_distance: 120.0  # in seconds
+
+train_transform:
+  _target_: torch_brain.transforms.Compose
+  transforms:
+    - _target_: core.transforms.UnitDropout
+      min_units: 0.5
+    - _target_: core.transforms.FilterUnits
+
+eval_transform:
+  _target_: core.transforms.FilterUnits
+
+num_workers: 25
+pin_memory: false
+persistent_workers: true
+precision: bf16
+
+# training
+num_epochs: 50
+batch_size: 80
+weight_decay: 1e-2
+
+grad_clip: 1.0
+
+# lr scheduler
+base_lr: 5e-4  # peak lr after rise
+lr_decay: 1e-2  # factor to decay down to
+
+# online brain-region probe over the pretrain units, run every val epoch. monitor=null
+# turns it off, leaving the run unscored
+monitor:
+  _target_: pretrain.models.nuclr.BrainRegionMonitor
+  data_root: ${data_root}
+
+val:
+  every_n_epochs: 1
+
+wandb:
+  project: pretrain-nuclr  # override on the CLI per sweep
+
+ckpt:
+  enable: true
+  every_n_epochs: 1

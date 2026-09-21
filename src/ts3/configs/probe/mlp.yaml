@@ -1,0 +1,9 @@
+_target_: ts3.probes.MLPProbe
+
+num_trials: 100
+num_folds: 5
+num_concurrent: 4
+seed: 42  # the probe's own seed, not the pretraining seed
+gpu_per_trial: 0.25
+cpu_per_trial: 1
+grad_clip: 1.0

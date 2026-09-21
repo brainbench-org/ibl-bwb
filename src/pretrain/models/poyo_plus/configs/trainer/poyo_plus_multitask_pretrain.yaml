@@ -1,0 +1,48 @@
+# @package _global_
+defaults:
+  - override /model: poyo_plus_10M
+  - _self_
+
+trainer:
+  _target_: pretrain.models.poyo_plus.POYOPlusMultitaskPretrain
+
+precision: bf16
+
+tasks:
+  - choice
+  - reward
+  - stimulus_contrast
+  - whisker_motion_energy
+  - wheel_speed
+  - right_paw_speed
+  - left_paw_speed
+  - licking_rate
+
+val:
+  selection_key: avg_metric
+  minimize: false
+
+ckpt:
+  enable: true
+
+
+multitask:
+  task_loss_weights:
+    choice: 0.01
+    reward: 0.5
+    stimulus_contrast: 0.1
+    whisker_motion_energy: 1.0
+    wheel_speed: 1.0
+    right_paw_speed: 1.0
+    left_paw_speed: 1.0
+    licking_rate: 1.0
+
+train_transforms:
+  - _target_: torch_brain.transforms.UnitDropout
+    max_units: 1800
+    min_units: 300
+    mode_units: 800
+    peak: 4
+
+wandb:
+  project: pretrain-poyo_plus_multitask

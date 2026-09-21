@@ -1,0 +1,11 @@
+_target_: pretrain.models.poyo.POYO
+latent_step: 0.125
+num_latents_per_step: 32
+dim: 192
+depth: 22
+dim_head: 32
+cross_heads: 6
+self_heads: 6
+ffn_dropout: 0.2
+lin_dropout: 0.4
+atn_dropout: 0.2

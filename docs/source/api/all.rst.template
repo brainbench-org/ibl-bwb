@@ -1,0 +1,31 @@
+.. _api_all_ref:
+
+===========
+All objects
+===========
+
+Every public object in the benchmark. Filter by name, module, or description.
+
+.. list-table::
+  :header-rows: 1
+  :class: apisearch-table
+
+  * - Object
+    - Description
+
+{% for module, module_info in API_REFERENCE %}
+{% for section in module_info["sections"] %}
+{% for obj in section["autosummary"] %}
+  * - :obj:`~{{ module }}.{{ obj }}`
+
+    - .. div:: apisearch-desc
+
+        .. currentmodule:: {{ module }}
+        .. autoshortsummary:: {{ module }}.{{ obj }}
+
+        .. div:: caption
+
+          :mod:`{{ module }}`
+{% endfor %}
+{% endfor %}
+{% endfor %}

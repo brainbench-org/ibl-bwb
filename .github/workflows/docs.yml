@@ -1,0 +1,49 @@
+name: Docs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Pages deploys are not mergeable: a second run would fight the first over the same
+# live site, so a newer push waits rather than cancelling and leaving a half-deploy.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  # Builds on every PR too, without deploying: conf.py imports core/ts1/ts2/ts3/pretrain
+  # to generate the API pages, so a rename under src/ breaks the docs and nothing else.
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      # Same reason as the `train` test job: `train` resolves the multi-GB CUDA build,
+      # which buys nothing on a CPU runner, so the CPU wheel goes in first.
+      - run: uv pip install --system torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+      - run: uv pip install --system -e ".[train,docs]"
+      - run: make -C docs html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/build/html
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

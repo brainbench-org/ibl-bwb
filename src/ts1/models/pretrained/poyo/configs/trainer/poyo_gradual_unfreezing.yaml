@@ -1,0 +1,29 @@
+# @package _global_
+defaults:
+  - override /model: poyo_10M
+  - _self_
+
+trainer:
+  _target_: ts1.models.pretrained.poyo.POYOEvalTrainer
+
+precision: bf16
+
+finetuning:
+  enable: true
+  strategy:
+    _target_: core.finetuning.GradualUnfreezing
+    unfreeze_at_epoch: 40
+    unfrozen_prefixes: [unit_emb., session_emb.]
+
+val:
+  start_patience: 50
+
+ckpt:
+  load_from: ???
+
+train_transforms:
+  - _target_: torch_brain.transforms.UnitDropout
+    max_units: 1800
+    min_units: 300
+    mode_units: 800
+    peak: 4

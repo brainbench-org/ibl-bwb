@@ -1,0 +1,13 @@
+_target_: ts1.models.single_session.cebra.CEBRA
+output_dimension: 64
+num_hidden_units: 128
+time_offsets: 1
+bin_size: 0.02  # 20ms
+mode: behavior    # "time" (unsupervised) or "behavior" (conditioned on task labels)
+max_iterations: 5000
+batch_size: 512
+learning_rate: 5.0e-4
+temperature: 1.0
+temperature_mode: constant
+model_architecture: "offset10-model"
+verbose: false

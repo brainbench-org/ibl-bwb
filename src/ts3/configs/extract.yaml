@@ -1,0 +1,11 @@
+defaults:
+  - _self_
+  - extractor: ???
+
+# ts3 pretrain and eval units both come from the selected_units build
+data_root: ${oc.env:BWB_DATA_ROOT_SELECTED_UNITS,${oc.env:BWB_DATA_ROOT,null}}
+
+embs_dir: ${oc.env:BWB_EMBS_DIR,embs/}
+# null lets the extractor name the file after what it read, so encoding several epochs of
+# one run, or several finetuning seeds, does not overwrite one file
+name: null
