@@ -327,7 +327,7 @@ names one recording, that seed, and the same model:
    therefore picks up runs you did not mean. Two matches for one (seed, recording) raises an error,
    and a missing one fails the scan.
 
-   Therefore, ``ckpt_dir`` is mandatory (no defualt), and calibration for a given model
+   Therefore, ``ckpt_dir`` is mandatory (no default), and calibration for a given model
    should be given a fresh directory. For example::
 
       $BWB_CKPT_DIR/ts3-calibrations/poyo_plus/

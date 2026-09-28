@@ -22,7 +22,7 @@ class NDTStitch(BaseModel):
     **Note:** `NDTStitch` intentionally has a lot of overlap with the single session `NDT` implementation (i.e., the DRY code principle is not respected).
     This design choice is motivated by the desire to make an individual model fully understandable for a user without having to navigate between models.
 
-    We document/highlight the key differences between single sesion and it's stitch version.
+    We document/highlight the key differences between single session and it's stitch version.
 
     **Removed:**
     * The spike embedding strategy.

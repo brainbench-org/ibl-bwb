@@ -520,7 +520,7 @@ class Pipeline(BrainsetPipeline):
 
         # register session
         # Note: it is possible to have a bigger data.domain than spikes.domain
-        # as spikes.domain is not necessarly a superset of all the behaviors' domains.
+        # as spikes.domain is not necessarily a superset of all the behaviors' domains.
         # We decide to restrain splits and data.domain to the spikes domain for the benchmark
         data = Data(
             brainset=brainset_description,
