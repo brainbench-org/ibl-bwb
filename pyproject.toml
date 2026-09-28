@@ -154,3 +154,10 @@ exclude = ["tests*"]
 [tool.setuptools.package-data]
 ibl_bwb_eval = ["data/*.txt"]
 core = ["data/*.txt"]
+
+[tool.codespell]
+# Ref: https://github.com/codespell-project/codespell#using-a-config-file
+skip = '.git,.gitignore,.gitattributes,*.svg,*.css'
+check-hidden = true
+# ignore-regex = ''
+# ignore-words-list = ''
