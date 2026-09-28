@@ -157,7 +157,15 @@ core = ["data/*.txt"]
 
 [tool.codespell]
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
-skip = '.git,.gitignore,.gitattributes,*.svg,*.css'
+skip = '.git,.git-meta,.gitignore,.gitattributes,*.svg,*.css'
 check-hidden = true
 # ignore-regex = ''
-# ignore-words-list = ''
+# ans: variable name convention for "answer"/return-value throughout the codebase
+# nd: loop variable abbreviating "no_weight_decay" entries in src/core/optim.py
+# neds: NEDS is a pretrained model in this benchmark (src/pretrain/models/neds/)
+# readin: neuroscience/ML term for the input-embedding layer, paired with "readout"
+# sems: variable name, plural of "sem" (standard error of the mean)
+# trough: correct neuroscience term for a spike waveform's minimum (src/pretrain/models/nemo/cache.py)
+# tung: surname (Renee Tung) in a citation author list, docs/source/refs.bib:67
+# usser: part of "H{\"a}usser" (Michael Häusser), a surname in citation author lists
+ignore-words-list = 'ans,nd,neds,readin,sems,trough,tung,usser'
