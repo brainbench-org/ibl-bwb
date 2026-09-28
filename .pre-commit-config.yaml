@@ -5,3 +5,9 @@ repos:
     - id: ruff
       args: ["--fix"]  # auto-fix import order
     - id: ruff-format
+  
+  - repo: https://github.com/codespell-project/codespell
+    # Configuration for codespell is in .pre-commit-config.yaml
+    rev: v2.4.3
+    hooks:
+    - id: codespell
