@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import logging
 import subprocess
+import time
 from pathlib import Path
 
 import h5py
@@ -68,12 +69,46 @@ def resolve_pid_eid(one: ONE, pid: str, retries: int = 2) -> str | None:
     return None
 
 
-def upload_and_remove(local_path: Path, s3_key: str) -> None:
-    """Upload a file to S3 with the ibl profile, then delete the local copy."""
-    subprocess.run(
-        ["aws", "s3", "cp", "--profile", AWS_PROFILE, str(local_path), s3_key],
-        check=True,
+def shipped_pids(version: str) -> set[str]:
+    """Pids already present under the version prefix, so an interrupted run can resume."""
+    result = subprocess.run(
+        ["aws", "s3", "ls", "--profile", AWS_PROFILE, f"{S3_PREFIX}/{version}/"],
+        capture_output=True,
+        text=True,
     )
+    # a missing prefix makes `aws s3 ls` exit 1 with no output: nothing shipped yet
+    return {
+        line.split()[-1].removesuffix(".h5")
+        for line in result.stdout.splitlines()
+        if line.endswith(".h5")
+    }
+
+
+def upload_and_remove(local_path: Path, s3_key: str, retries: int = 3) -> None:
+    """Upload a file to S3 with the ibl profile, retrying transient failures, then delete it."""
+    for attempt in range(retries + 1):
+        try:
+            subprocess.run(
+                [
+                    "aws",
+                    "s3",
+                    "cp",
+                    "--only-show-errors",
+                    "--profile",
+                    AWS_PROFILE,
+                    str(local_path),
+                    s3_key,
+                ],
+                check=True,
+            )
+            break
+        except subprocess.CalledProcessError:
+            if attempt == retries:
+                raise
+            logger.warning(
+                f"upload of {local_path.name} failed, retrying ({attempt + 1}/{retries})"
+            )
+            time.sleep(10 * (attempt + 1))
     local_path.unlink()
 
 
@@ -100,10 +135,15 @@ def main(
         password="international",
     )
 
+    done = shipped_pids(version)
+    logger.info(f"{len(done)} recordings already under {S3_PREFIX}/{version}/, skipping them")
+
     shipped, skipped = 0, 0
     for pid in pids:
         if limit is not None and shipped >= limit:
             break
+        if pid in done:
+            continue
 
         eid = resolve_pid_eid(one, pid)
         if eid is None or eid not in wanted_eids:
