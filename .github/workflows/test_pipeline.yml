@@ -63,9 +63,8 @@ jobs:
           uv pip install \
             "ray<2.42" \
             "numpy==1.24.4" \
-            "ONE-api==3.4.0" \
-            "ibllib @ git+https://github.com/int-brain-lab/ibllib.git@2ca4ee2065a9b5baabf7d3ac870839a3a7af9ad3" \
-            "ibl-neuropixel<1.15" \
+            "ONE-api==3.6.2" \
+            "ibllib==4.1.1" \
             "scipy==1.15.3" \
             "pyarrow>=14.0" \
             "h5py" \
