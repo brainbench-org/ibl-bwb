@@ -236,25 +236,47 @@ LFP recordings
 
 LFP is shipped separately from the spikes/behavior brainsets above, as
 ``lfpack``-compressed traces (`int-brain-lab/lfpack
-<https://github.com/int-brain-lab/lfpack>`_, mild tier: ~270x compression,
-~15µV median RMSE). Unlike the ``.h5`` files above, LFP is keyed by **probe
-insertion** (``pid``), not by session, since a session can carry more than one
-probe:
+<https://github.com/int-brain-lab/lfpack>`_). Unlike the ``.h5`` files above, LFP
+is keyed by **probe insertion** (``pid``), not by session, since a session can
+carry more than one probe. Each LFP version has its own prefix; use the latest:
 
 .. code-block:: bash
 
-   aws s3 cp s3://brain-wide-bench/brainsets/lfp/ibl_brain_wide_bench_2026/<pid>.h5 \
-       ./data/lfp/ibl_brain_wide_bench_2026/ --no-sign-request
+   aws s3 cp s3://brain-wide-bench/brainsets/lfp/ibl_brain_wide_bench_2026/v05/<pid>.h5 \
+       ./data/lfp/ibl_brain_wide_bench_2026/v05/ --no-sign-request
+
+.. list-table:: LFP versions
+   :header-rows: 1
+
+   * - Prefix
+     - lfpack
+     - Tier
+     - Recordings
+     - Published
+   * - ``v05/``
+     - 1.2.0
+     - fine (alpha = 2.5), ~150x compression of the raw 2500 Hz band
+     - 688
+     - 2026-11-18
+   * - ``v03/``
+     - < 1.0
+     - mild, ~270x compression, ~15 µV median RMSE
+     - 688
+     - 2026-09-05
+
+The unversioned ``lfp/ibl_brain_wide_bench_2026/<pid>.h5`` keys are the v03 files,
+kept for existing users; new work should use a versioned prefix.
 
 There is no ``<build>``/``<regime>`` split for LFP: it does not depend on unit
 filtering, and the same file serves both pretrain and eval. Coverage matches
-the session cohort above (688 of the archive's 1099 recordings fall within
-``pretrain_recording_ids.txt``/``eval_recording_ids.txt``; the rest belong to
-sessions outside brain-wide-bench and are not shipped).
+the session cohort above: only recordings whose session is in
+``data/pretrain_eids.txt`` or ``data/eval_eids.txt`` are shipped.
 
 To find the ``pid``\\(s) for a given session, read the ``probes`` group of that
 session's own ``.h5`` file (its ``id`` field lists the session's probe
-insertion ids). Decode a shipped file with ``lfpack.LFPackReader``.
+insertion ids). Decode a shipped file with ``lfpack.LFPackReader``
+(``lfpack>=1.2`` for ``v05/``); its ``provenance`` property records the lfpack
+version and settings that wrote it.
 
 
 .. _dataset_custom_builds:
