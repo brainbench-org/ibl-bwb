@@ -31,15 +31,12 @@ hand to keep CB coverage in eval. It is kept as a record: rerunning it writes on
 
 ## LFP
 
-`scripts/ship_lfp.py` splits a merged lfpack archive one recording at a time, keeps the
-recordings whose session is in `data/pretrain_eids.txt` or `data/eval_eids.txt`, and uploads
-each to `s3://brain-wide-bench/brainsets/lfp/ibl_brain_wide_bench_2026/<version>/<pid>.h5`.
+Each version was split out of a merged lfpack archive one recording at a time, keeping the
+recordings whose session is in `data/pretrain_eids.txt` or `data/eval_eids.txt`, and each
+recording was uploaded to `s3://brain-wide-bench/brainsets/lfp/ibl_brain_wide_bench_2026/<version>/<pid>.h5`.
 
 - `v03/`: the lfpack mild-tier archive of the ephys-atlas recordings (688 recordings shipped,
   2026-09-05). Server-side copy of the original unversioned keys, which are kept.
 - `v05/`: `lf_compressed_v05_a2p5_fine_all_bwm.h5`, the BWM fine tier (alpha = 2.5) written by
-  lfpack 1.2.0, from `s3://ibl-brain-wide-map-public/resources/ibl-agent-data/`:
-
-  ```shell
-  uv run --with lfpack --with ONE-api python ibl_brain_wide_bench_2026/scripts/ship_lfp.py --version v05
-  ```
+  lfpack 1.2.0, from `s3://ibl-brain-wide-map-public/resources/ibl-agent-data/` (688
+  recordings shipped, 2026-11-18).
