@@ -3,8 +3,8 @@
 # dependencies = [
 #   "ray<2.42",
 #   "numpy==1.24.4",
-#   "ONE-api==3.4.0",
-#   "ibllib==4.0.0",
+#   "ONE-api==3.6.2",
+#   "ibllib==4.1.1",
 #   "scipy==1.15.3",
 # ]
 # ///
