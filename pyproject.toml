@@ -35,6 +35,9 @@ xformers = [
 cebra = [
     "cebra==0.6.0",
 ]
+lfp = [
+    "lfpack==1.2.0",
+]
 # Exactly the dependency closure of src/ibl_bwb_eval, which is importable on its own and
 # is all an external consumer needs to build or score a submission.
 scoring = [
