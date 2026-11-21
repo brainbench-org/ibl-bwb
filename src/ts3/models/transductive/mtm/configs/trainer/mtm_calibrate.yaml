@@ -6,8 +6,8 @@ defaults:
 trainer:
   _target_: ts3.models.transductive.mtm.MtMCalibrateTrainer
 
-# calibration is single-recording pretraining: same objective as mtm_pretrain.yaml,
-# restricted to one eval recording
+# calibration is single-recording pretraining: mtm_pretrain.yaml's objective,
+# restricted to one eval recording, minus the region mask modes (see masker below)
 recording_ids: ???  # single eval recording, e.g. [<EID>]
 
 ckpt:
@@ -36,11 +36,11 @@ val:
 masker:
   _target_: pretrain.models.mtm.MtMMasker
   mask_ratio: 0.5
+  # no inter_region/intra_region: they group units by region_cosmos, the TS3 target, so
+  # on an eval recording they would fit the stitcher columns to the labels being probed
   mask_types:
     - "neuron"
     - "causal"
-    - "inter_region"
-    - "intra_region"
   causal_ratio: 0.5
 
 wandb:
