@@ -27,6 +27,10 @@ class ModelConfigDiscovery(SearchPathPlugin):
     compose no group at all, since they rebuild the model from the config saved inside the
     checkpoint they read, but its transductive calibration trainers do, the same way
     TS1/TS2 finetuning does.
+
+    The file name is project-specific because ``hydra_plugins`` is a namespace shared by
+    every installed package: another package shipping a module of the same name would
+    shadow this one, or be shadowed by it.
     """
 
     provider = "model-configs"
@@ -41,6 +45,11 @@ class ModelConfigDiscovery(SearchPathPlugin):
         app_dir = Path(primary.removeprefix("file://")).resolve() if primary else None
         suites = [name for name in SUITES if app_dir and app_dir.is_relative_to(_package_dir(name))]
         model_pkgs = [importlib.import_module(f"{name}.models") for name in suites]
+
+        # Hydra runs every installed plugin in every app, so leave apps that are not ours
+        # alone: another project's app must not be handed pretrain's configs.
+        if not suites and not (app_dir and app_dir.is_relative_to(_package_dir("pretrain"))):
+            return
 
         # A models/pretrained/ or models/transductive/ is the proxy for "finetunes or
         # calibrates from a pretrain checkpoint". A pretrain run sits in no suite: reaching

@@ -48,6 +48,13 @@ def test_an_app_reaches_exactly_the_packages_it_declares(app):
     assert _reachable(app) == _declared(app)
 
 
+def test_an_app_outside_this_repo_reaches_no_package(tmp_path):
+    """Hydra runs every installed plugin in every app, so another project's app sharing the
+    environment must not be handed pretrain's configs."""
+    with initialize_config_dir(config_dir=str(tmp_path), version_base="1.2"):
+        assert GlobalHydra.instance().config_loader().get_group_options("trainer") == []
+
+
 @pytest.mark.parametrize("app", list(REACHES))
 @pytest.mark.parametrize("group", GROUPS)
 def test_no_two_packages_claim_one_config_name(app, group):
