@@ -13,7 +13,7 @@ class MtMEvalTrainer(TS1EvalTrainer):
 
     Pretraining always prompts with the mode that produced the input, but TS1 decodes
     uncorrupted input, so the mode is a config choice: ``cfg.mask_mode`` names one, or
-    ``null`` leaves the sequence unprompted. See prds/ts1-mtm-trainer.md.
+    ``null`` leaves the sequence unprompted.
     """
 
     def setup_model(self, ckpt: dict | None):
