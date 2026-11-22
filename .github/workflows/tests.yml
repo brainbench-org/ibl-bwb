@@ -59,6 +59,22 @@ jobs:
           assert "ibl_bwb_eval/data/eval_recording_ids.txt" in names, "eval session list missing"
           assert not [n for n in names if n.endswith((".pyc", ".pyo"))], "compiled files in wheel"
           EOF
+      # The ibl-bwb wheel too: a non-editable install runs on its Hydra configs and the
+      # discovery plugin, neither of which setuptools ships unless pyproject.toml says so.
+      - run: uv build --wheel -o dist-ibl-bwb .
+      - name: The ibl-bwb wheel ships every Hydra config and the discovery plugin
+        run: |
+          python - <<'EOF'
+          import glob, pathlib, zipfile
+          names = set(zipfile.ZipFile(glob.glob("dist-ibl-bwb/*.whl")[0]).namelist())
+          src = pathlib.Path("src")
+          want = {p.relative_to(src).as_posix() for p in src.rglob("*.yaml")
+                  if "configs" in p.parts and p.parts[1] != "tests"}
+          missing = sorted(want - names)
+          assert want and not missing, f"{len(missing)} config(s) missing: {missing[:5]}"
+          assert "hydra_plugins/ibl_bwb_config_discovery.py" in names, "discovery plugin missing"
+          assert not [n for n in names if "/scripts/" in n], "a scripts/ dir shipped"
+          EOF
 
   # Everything else. Runs the whole directory rather than a list, so a new test file is
   # covered without touching this workflow. No GPU and no dataset on the runner: the
