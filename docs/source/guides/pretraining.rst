@@ -109,7 +109,7 @@ Two things follow from that layout:
 
 .. note::
 
-   Hydra config discovery is handled by ``src/hydra_plugins/model_config_discovery.py``,
+   Hydra config discovery is handled by ``src/hydra_plugins/ibl_bwb_config_discovery.py``,
    which scans every subdirectory of ``pretrain/models/`` for a ``configs/`` folder and
    registers as additional search paths. This means any ``configs/model/`` or
    ``configs/trainer/`` directory inside your model package is treated exactly as if it

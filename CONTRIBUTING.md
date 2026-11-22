@@ -59,7 +59,7 @@ yours in a fork and submit its predictions; open an issue if you would like us t
 it for validity.
 
 Nothing central needs editing. Model configs are auto-discovered by
-[model_config_discovery.py](src/hydra_plugins/model_config_discovery.py), so a directory
+[ibl_bwb_config_discovery.py](src/hydra_plugins/ibl_bwb_config_discovery.py), so a directory
 is enough and it becomes available as `trainer=<name>`.
 
 ```

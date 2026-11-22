@@ -119,7 +119,7 @@ if it's inferable from the request itself.
 4. **Implementing a new model end-to-end.** Copy `src/pretrain/models/my_model/`, follow the
    `<name>.py` / `<name>_<role>.py` / `configs/` layout, implement `BaseModel`'s interface
    (`forward`, `input_fn`, `link_datasets`, `configure_readout`, `load_ckpt`) rather than reinventing it,
-   and rely on `model_config_discovery.py` auto-discovery instead of registering the model anywhere
+   and rely on `ibl_bwb_config_discovery.py` auto-discovery instead of registering the model anywhere
    central. Confirm with the user whether the goal is a leaderboard submission (train → `save_preds` →
    upload at bwb.iblcore.org, per the README) or just local evaluation.
 5. **Bringing an external pretraining pipeline and evaluating only on BWB.** This person doesn't need
