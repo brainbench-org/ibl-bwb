@@ -36,7 +36,7 @@ recordings whose session is in `data/pretrain_eids.txt` or `data/eval_eids.txt`,
 recording was uploaded to `s3://brain-wide-bench/brainsets/lfp/ibl_brain_wide_bench_2026/<version>/<pid>.h5`.
 
 - `v03/`: the lfpack mild-tier archive of the ephys-atlas recordings (688 recordings shipped,
-  2026-09-05). Server-side copy of the original unversioned keys, which are kept.
+  2026-09-05). Server-side copy of the original unversioned keys, removed 2026-11-23.
 - `v05/`: `lf_compressed_v05_a2p5_fine_all_bwm.h5`, the BWM fine tier (alpha = 2.5) written by
   lfpack 1.2.0, from `s3://ibl-brain-wide-map-public/resources/ibl-agent-data/` (688
   recordings shipped, 2026-11-18).
