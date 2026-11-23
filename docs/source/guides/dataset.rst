@@ -264,8 +264,8 @@ carry more than one probe. Each LFP version has its own prefix; use the latest:
      - 688
      - 2026-09-05
 
-The unversioned ``lfp/ibl_brain_wide_bench_2026/<pid>.h5`` keys are the v03 files,
-kept for existing users; new work should use a versioned prefix.
+The unversioned ``lfp/ibl_brain_wide_bench_2026/<pid>.h5`` keys were removed on 2026-11-23;
+the same files are under ``v03/``.
 
 There is no ``<build>``/``<regime>`` split for LFP: it does not depend on unit
 filtering, and the same file serves both pretrain and eval. Coverage matches
