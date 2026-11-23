@@ -142,21 +142,18 @@ known-third-party = ["wandb"]
 requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
 
-# Training runs from a checkout (`python src/ts1/train.py`), never from a wheel, so the
-# model configs are deliberately not packaged.
 [tool.setuptools.packages.find]
 where = ["src"]
-# Explicit __init__.py everywhere, so a launcher dir under */scripts/ cannot silently
-# become a package and ship. src/hydra_plugins/ is the exception: an __init__.py there
-# hides every other installed Hydra plugin, so it stays a PEP 420 namespace package.
-namespaces = false
-# `tests` is a top-level name that would collide with any other package shipping one.
-# A no-op while it has no __init__.py, kept so adding one cannot ship it by accident.
-exclude = ["tests*"]
+# hydra_plugins/ must stay a PEP 420 namespace (an __init__.py hides other Hydra plugins);
+# the allowlist keeps tests/ and scripts/ dirs out of the wheel.
+namespaces = true
+include = ["core*", "ibl_bwb_eval*", "pretrain*", "ts1*", "ts2*", "ts3*", "hydra_plugins"]
+exclude = ["tests*", "*.scripts", "*.scripts.*"]
 
 [tool.setuptools.package-data]
 ibl_bwb_eval = ["data/*.txt"]
 core = ["data/*.txt"]
+"*" = ["configs/**/*.yaml"]  # Hydra configs, for `python -m ts3.eval` and `trainer=`
 
 [tool.codespell]
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
